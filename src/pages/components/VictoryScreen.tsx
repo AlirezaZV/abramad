@@ -115,7 +115,7 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
         className="text-center space-y-8 max-w-3xl relative z-10"
       >
         {/* Logo */}
-        <motion.div
+        {/* <motion.div
           animate={{
             rotate: [0, 360],
           }}
@@ -126,7 +126,7 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
           className="flex justify-center"
         >
           <Logo className="w-20 h-20" />
-        </motion.div>
+        </motion.div> */}
 
         {/* Trophy/Success Icon */}
         <motion.div
@@ -145,9 +145,6 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
           transition={{ delay: 1 }}
           className="space-y-4"
         >
-          <h1 className="text-white">
-            تبریک!
-          </h1>
           <p className="text-white text-2xl">
             {firstName} عزیز، تبریک می‌گیم، تو از هر سه بحران سربلند بیرون اومدی!
           </p>
@@ -158,7 +155,7 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 1.3 }}
-          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8"
+          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4"
         >
           <p className="text-white leading-relaxed">
             الان می‌دونی چطور می‌شه حتی وسط آتش‌سوزی، قطعی سرویس یا حمله سایبری، جریان کار یه سازمان رو زنده نگه داشت. این همون کاریه که سرویس <span className="text-green-400">بازیابی از بحران ابرآمد (ویژه راهکاران)</span> برای سازمان‌ها انجام می‌ده.
@@ -186,7 +183,7 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
                 type: "spring",
                 stiffness: 200
               }}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-6 py-4 text-center"
+              className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-3 text-center"
             >
               <div className="text-4xl mb-2">{badge.icon}</div>
               <p className="text-white text-sm">{badge.label}</p>

@@ -49,7 +49,7 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleToggle}
-          className="fixed z-[9999] w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg hover:shadow-xl flex items-center justify-center text-white transition-all duration-300"
+          className="fixed z-[9999] w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-green-500 shadow-lg hover:shadow-xl flex items-center justify-center text-white transition-all duration-300"
           style={{
             boxShadow: isMuted 
               ? '0 4px 20px rgba(239, 68, 68, 0.4)' 
@@ -89,3 +89,5 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
     </AnimatePresence>
   );
 }
+export default BackgroundMusic;
+

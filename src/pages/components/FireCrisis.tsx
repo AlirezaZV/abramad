@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from "lottie-react";
 import { Button } from './ui/button';
 import { useAudio } from '../../contexts/AudioContext';
+import { Check, CircleCheck } from 'lucide-react';
 
 interface FireCrisisProps {
   onComplete: () => void;
@@ -461,7 +462,7 @@ useEffect(() => {
                     transition={{ delay: 0.3 }}
                     className="absolute inset-0 flex items-center justify-center"
                   >
-                    <span className="text-4xl">✓</span>
+                    <Check width={50} height={50} color='green'/>
                   </motion.div>
                 </div>
               </motion.div>

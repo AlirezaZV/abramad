@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
 import { Button } from './ui/button';
-import { AlertTriangle, WifiOff } from 'lucide-react';
+import { AlertTriangle, Check, WifiOff } from 'lucide-react';
 import { useAudio } from '../../contexts/AudioContext';
 
 interface ServerCrisisProps {
@@ -458,7 +458,7 @@ useEffect(() => {
                     transition={{ delay: 0.3 }}
                     className="absolute inset-0 flex items-center justify-center"
                   >
-                    <span className="text-4xl">✓</span>
+                    <Check width={50} height={50} color='green'/>
                   </motion.div>
                 </div>
               </motion.div>

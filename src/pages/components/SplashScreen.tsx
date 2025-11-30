@@ -228,3 +228,4 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
     </motion.div>
   );
 }
+export default SplashScreen;
