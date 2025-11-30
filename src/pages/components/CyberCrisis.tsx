@@ -80,8 +80,8 @@ useEffect(() => {
   const updateY = () => {
     if (window.innerWidth < 640) {
       // Mobile
-      setTargetLottieY(-50);
-      setTargetQuestionY(-150);
+      setTargetLottieY(-130);
+      setTargetQuestionY(-230);
     } else {
       // Desktop
       setTargetLottieY(-200);
@@ -267,8 +267,8 @@ useEffect(() => {
         initial={{ opacity: 1, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -200 }}
-        transition={{ duration: 0.5 }}
-        className="mt-10 text-center bg-red-900/30 backdrop-blur-sm border border-red-500/50  p-6"
+        transition={{ duration: 0.9 }}
+        className="mt-10 text-center  p-6"
       >
         <p className="text-red-400 mb-2">۲۲ دی</p>
         <h2 className="text-white text-2xl font-bold">
@@ -361,7 +361,7 @@ useEffect(() => {
               onClick={() => feedback?.type !== 'correct' && handleAnswerSelect(index)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              className={`w-full p-4 rounded-lg text-right border-2 transition-all
+              className={`w-full p-2 rounded-lg text-right border-2 transition-all
                 ${
                   selectedAnswer === index
                     ? feedback?.type === 'correct'
