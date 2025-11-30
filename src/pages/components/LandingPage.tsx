@@ -76,11 +76,11 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-between">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1}}
+          transition={{ duration: 2 }}
           className="max-w-2xl w-full text-center space-y-8 flex-1 flex flex-col justify-center px-4"
-          style={{ translateY: 60 }}
+          style={{ zIndex: 200,translateY: 60 }}
         >
           {/* Logo */}
           <motion.div
@@ -103,7 +103,7 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
             className="text-white"
-            style={{ fontSize: 35, fontWeight: "bold" }}
+            style={{ fontSize: 30, fontWeight: "bold" }}
           >
             نجات شرکت در سه حرکت!
           </motion.h1>
@@ -155,37 +155,20 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
         </motion.div>
 
         {/* Fire Animation at Bottom */}
-        <div className="relative w-full flex justify-center items-end mb-0 overflow-hidden">
+        <div className="relative w-full flex justify-center items-end mb-0 overflow-hidden" >
           <div className="flex w-full -mb-10">
             {fireAnimationData && (
               <>
-                {/* <Lottie
-                  animationData={fireAnimationData}
-                  loop={true}
-                  className="w-[100px] h-full flex-shrink-0"
-                /> */}
                 <Lottie
                   animationData={fireAnimationData}
                   loop={true}
                   className="w-100 lg:w-128 h-full flex-shrink-0"
                 />
-                {/* <Lottie
+                 <Lottie
                   animationData={fireAnimationData}
                   loop={true}
                   className="w-100 lg:w-128 h-full flex-shrink-0"
                 />
-                <Lottie
-                  animationData={fireAnimationData}
-                  loop={true}
-                  className="w-100 lg:w-128 h-full flex-shrink-0"
-                />
-                <Lottie
-                  animationData={fireAnimationData}
-                  loop={true}
-                  className="w-100 lg:w-128 h-full flex-shrink-0"
-                /> */}
-                {/* <Lottie animationData={fireAnimationData} loop={true} className="w-[300px] h-full flex-shrink-0" /> */}
-                {/* <Lottie animationData={fireAnimationData} loop={true} className="w-[300px] h-full flex-shrink-0" /> */}
               </>
             )}
           </div>
@@ -212,10 +195,6 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
 
             {/* Form Container */}
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="relative z-10 w-full max-w-md"
             >
               <UserForm onSubmit={handleFormSubmit} onClose={handleFormClose} />

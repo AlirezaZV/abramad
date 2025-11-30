@@ -2624,7 +2624,7 @@
 
   @media (width >= 64rem) {
     .lg\:w-128 {
-      width: calc(var(--spacing) * 128);
+      width: calc(var(--spacing) * 256);
     }
     .lg\:w-64 {
       width: calc(var(--spacing) * 128);

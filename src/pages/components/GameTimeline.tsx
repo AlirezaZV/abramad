@@ -59,7 +59,7 @@ export function GameTimeline({ currentCrisis, currentQuestion = 0 }: GameTimelin
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
-      className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-lg border-t border-gray-700 py-2 px-4 z-30"
+      className="fixed bottom-0 left-0 right-0 bg-gray-900/20 backdrop-blur-lg border-t border-gray-700 py-2 px-4 z-30"
     >
       <div className="max-w-6xl mx-auto">
         {/* Compact Progress Bar */}

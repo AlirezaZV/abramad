@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
 import { Button } from './ui/button';
 import { AlertTriangle, Shield, ShieldAlert } from 'lucide-react';
+import { useAudio } from '../../contexts/AudioContext';
 
 interface CyberCrisisProps {
   onComplete: () => void;
@@ -68,6 +69,41 @@ export function CyberCrisis({ onComplete, onQuestionChange, firstName }: CyberCr
   const [sceneC2Data, setSceneC2Data] = useState(null);
   const [isC1Complete, setIsC1Complete] = useState(false);
   const lottieRef = useRef<any>(null);
+  const { playSound, fadeVolume } = useAudio();
+  const cleanupFunctionsRef = useRef<Array<() => void>>([]);
+  
+  const [targetLottieY, setTargetLottieY] = useState(-200);
+  const [targetQuestionY, setTargetQuestionY] = useState(-389);
+
+
+useEffect(() => {
+  const updateY = () => {
+    if (window.innerWidth < 640) {
+      // Mobile
+      setTargetLottieY(-50);
+      setTargetQuestionY(-150);
+    } else {
+      // Desktop
+      setTargetLottieY(-200);
+      setTargetQuestionY(-389);
+    }
+  };
+
+  updateY(); // run once
+  window.addEventListener("resize", updateY);
+
+  return () => window.removeEventListener("resize", updateY);
+}, [window.innerWidth]);
+
+  // Play alarm sound
+  useEffect(() => {
+    const alarmCleanup = playSound('/sounds/alarm.mp3', { loop: true, volume: 0.6 });
+    cleanupFunctionsRef.current = [alarmCleanup];
+
+    return () => {
+      cleanupFunctionsRef.current.forEach(cleanup => cleanup());
+    };
+  }, [playSound]);
 
   // Load Lottie animations
   useEffect(() => {
@@ -123,6 +159,9 @@ export function CyberCrisis({ onComplete, onQuestionChange, firstName }: CyberCr
     setSelectedAnswer(index);
 
     if (isCorrect) {
+      // Fade out alarm sound
+      fadeVolume('/sounds/alarm.mp3', 0, 500);
+
       setFeedback({
         type: 'correct',
         message: question.correctFeedback,
@@ -130,6 +169,8 @@ export function CyberCrisis({ onComplete, onQuestionChange, firstName }: CyberCr
 
       // Show success message for 3 seconds, then transition
       setTimeout(() => {
+        // Fade back in alarm sound
+        fadeVolume('/sounds/alarm.mp3', 0.6, 500);
         setFeedback(null);
         setSelectedAnswer(null);
         
@@ -204,7 +245,8 @@ export function CyberCrisis({ onComplete, onQuestionChange, firstName }: CyberCr
       />
 
       {/* Alarm lights */}
-      <div className={`absolute left-0 right-0 flex justify-center gap-8 transition-all duration-1000 top-0`}>
+      <div className={`absolute flex-col flex left-0 right-0 flex justify-center gap-8 transition-all duration-1000 top-0`}>
+       <div className='flex-row flex ' style={{alignSelf:"center"}}>
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
@@ -216,39 +258,49 @@ export function CyberCrisis({ onComplete, onQuestionChange, firstName }: CyberCr
             className="w-12 h-12 bg-red-600 rounded-full shadow-lg shadow-red-500/50 blur-xl"
           />
         ))}
+        </div>
+  {/* --- INTRO TEXT --- */}
+  <AnimatePresence>
+    {showIntro && (
+      <motion.div
+        key="introText"
+        initial={{ opacity: 1, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -200 }}
+        transition={{ duration: 0.5 }}
+        className="mt-10 text-center bg-red-900/30 backdrop-blur-sm border border-red-500/50  p-6"
+      >
+        <p className="text-red-400 mb-2">۲۲ دی</p>
+        <h2 className="text-white text-2xl font-bold">
+         حمله سایبری به سیستم مرکزی سازمان
+        </h2>
+      </motion.div>
+    )}
+  </AnimatePresence>
       </div>
 
-      {/* Main Content - Responsive Layout */}
-      <motion.div 
-        layout
-        className={`w-full max-w-7xl h-[80%] mx-auto mt-12 flex flex-col-reverse transition-all duration-1000 ${showIntro ? 'items-center justify-center' : 'lg:flex-row-reverse items-center justify-center lg:gap-12 mt-20'}`}
-      >
-        <motion.div
-          layout
-          initial={false}
-          animate={{
-            scale: showIntro ? 1 : 0.9,
-          }}
-          transition={{
-            duration: 0.6,
-            ease: "easeInOut"
-          }}
-          className="w-80 h-80 flex items-center justify-center overflow-hidden"
-        >
-          <div className="w-full h-full bg-gray-800/50 rounded-lg flex items-center justify-center border border-red-500/30 relative overflow-hidden">
-            {/* Glitch effect in background */}
-            <motion.div
-              animate={{
-                opacity: [0.1, 0.3, 0.1],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-              }}
-              className="absolute inset-0 bg-gradient-to-br from-red-600 to-purple-600"
-            />
-            
-            <div className="relative z-10 w-48 h-48 flex items-center justify-center">
+{/* MAIN CONTENT AREA */}
+<motion.div
+  layout
+  className="w-full max-w-7xl mx-auto flex flex-col items-center justify-center mt-10 relative"
+  transition={{ layout: { duration: 1, ease: "easeInOut" } }}
+>
+
+
+
+   {/* --- LOTTIE SHARED ELEMENT --- */}
+  <motion.div
+    layoutId="lottie"
+    className="flex items-center justify-center"
+    initial={false}
+    animate={
+      showIntro
+        ? { scale: 1.3, y: 0 }
+        : { scale: 0.85, y: targetLottieY }
+    }
+    transition={{ duration: 1, ease: "easeInOut" }}
+  >
+    <div className="w-72 h-72 md:w-80 md:h-80">
               {sceneC1Data && sceneC2Data && (
                 <Lottie
                   lottieRef={lottieRef}
@@ -261,86 +313,79 @@ export function CyberCrisis({ onComplete, onQuestionChange, firstName }: CyberCr
                   }}
                   className="w-full h-full"
                 />
-              )}
-            </div>
-          </div>
-        </motion.div>
-        {/* Question Box - LEFT on desktop, BOTTOM on mobile */}
-        <div className="relative z-10 w-full max-w-2xl" style={{minHeight:showIntro ? 0 : 540, alignContent:"center"}}>
-          <AnimatePresence mode="wait">
-            {showIntro ? (
-              <motion.div
-                key="intro"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-center"
-              >
-                <motion.div 
-                  animate={{ scale: [1, 1.02, 1] }}
-                  transition={{ duration: 1.5 }}
-                  className="bg-red-900/30 backdrop-blur-sm border border-red-500/50 rounded-lg p-6"
-                >
-                  <p className="text-red-400 mb-2">۲۲ دی</p>
-                  <h2 className="text-white text-2xl font-bold">
-                    حمله سایبری به سیستم مرکزی سازمان
-                  </h2>
-                </motion.div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key={currentQuestion}
-                initial={{ x: direction > 0 ? 1000 : -1000, opacity: 0 }}
-                animate={{ 
-                  x: 0, 
-                  opacity: 1,
-                  // Shake animation on wrong answer
-                  rotate: selectedAnswer !== null && feedback?.type === 'incorrect' ? [0, -2, 2, -2, 2, 0] : 0,
-                }}
-                exit={{ x: direction > 0 ? -1000 : 1000, opacity: 0 }}
-                transition={{ 
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.3 },
-                  rotate: { duration: 0.5 }
-                }}
-                className="bg-gray-800/90 backdrop-blur-sm rounded-2xl p-6 lg:p-8 w-full border border-gray-700"
-              >
-                <div className="mb-6">
-                  <span className="text-gray-400 text-sm">سوال {currentQuestion + 1} از {questions.length}</span>
-                  <p className="text-white mt-2 leading-relaxed">
-                    {question.question}
-                  </p>
-                </div>
+              )}    </div>
+  </motion.div>
 
-                <div className="space-y-3">
-                  {question.options.map((option, index) => (
-                    <motion.button
-                      key={index}
-                      onClick={() => feedback?.type !== 'correct' && handleAnswerSelect(index)}
-                      disabled={feedback?.type === 'correct'}
-                      whileHover={feedback?.type !== 'correct' ? { scale: 1.02 } : {}}
-                      whileTap={feedback?.type !== 'correct' ? { scale: 0.98 } : {}}
-                      className={`w-full p-4 rounded-lg text-right transition-all border-2 ${
-                        selectedAnswer === index
-                          ? feedback?.type === 'correct'
-                            ? 'bg-green-600/20 border-green-500 text-green-300'
-                            : 'bg-red-600/20 border-red-500 text-red-300'
-                          : 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600 hover:border-gray-500'
-                      } ${feedback?.type === 'correct' ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
-                    >
-                      <span className="inline-block w-6 ml-3 text-gray-400">{index + 1})</span>
-                      {option.text}
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+
+  {/* RIGHT/BELOW CONTENT (TITLE -> QUESTION BOX) */}
+  <motion.div
+    layout
+    layoutId="content-box"
+    className={`w-full max-w-2xl flex flex-col items-center`}
+    transition={{
+      layout: { duration: 0.9, ease: "easeInOut" }
+    }}
+  >
+
+  {/* --- QUIZ CONTENT --- */}
+  <AnimatePresence mode="wait">
+    {!showIntro && (
+      <motion.div
+        key={currentQuestion}
+        layout
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -30 }}
+        transition={{
+          layout: { duration: 1, ease: "easeInOut" },
+          opacity: { duration: 0.4 }
+        }}
+        style={{
+    borderTopColor:" #d62963",
+    marginTop:targetQuestionY,
+    borderTopWidth: "10px"}}
+        className="mt-10 w-full max-w-2xl bg-gray-800/20 backdrop-blur-sm rounded-2xl p-6 border border-gray-700"
+      >
+        <span className="text-gray-400 text-sm">
+          سوال {currentQuestion + 1} از {questions.length}
+        </span>
+
+        <p className="text-white mt-3 leading-relaxed">
+          {question.question}
+        </p>
+
+        <div className="mt-6 space-y-3">
+          {question.options.map((option, index) => (
+            <motion.button
+              key={index}
+              onClick={() => feedback?.type !== 'correct' && handleAnswerSelect(index)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              className={`w-full p-4 rounded-lg text-right border-2 transition-all
+                ${
+                  selectedAnswer === index
+                    ? feedback?.type === 'correct'
+                      ? "bg-green-600/20 border-green-500 text-green-300"
+                      : "bg-red-600/20 border-red-500 text-red-300"
+                    : "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600"
+                }
+              `}
+            >
+              <span className="inline-block w-6 ml-3 text-gray-400">
+                {index + 1}
+              </span>
+              {option.text}
+            </motion.button>
+          ))}
         </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+
       </motion.div>
 
       {/* Progress indicator */}
-      {!showIntro && (
+      {/* {!showIntro && (
         <div className="mt-8 flex gap-2 justify-center relative z-10">
         {questions.map((_, index) => (
           <div
@@ -355,7 +400,7 @@ export function CyberCrisis({ onComplete, onQuestionChange, firstName }: CyberCr
           />
         ))}
       </div>
-      )}
+      )} */}
 
       {/* Feedback Popover - ONLY FOR CORRECT */}
       <AnimatePresence>
@@ -424,6 +469,7 @@ export function CyberCrisis({ onComplete, onQuestionChange, firstName }: CyberCr
           </motion.div>
         )}
       </AnimatePresence>
+      </motion.div>
     </motion.div>
   );
 }
