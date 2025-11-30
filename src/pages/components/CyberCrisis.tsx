@@ -179,9 +179,7 @@ useEffect(() => {
           setCurrentQuestion(currentQuestion + 1);
         } else {
           // All questions completed
-          setTimeout(() => {
             onComplete();
-          }, 1000);
         }
       }, 3000);
     } else {
@@ -194,7 +192,7 @@ useEffect(() => {
       setTimeout(() => {
         setSelectedAnswer(null);
         setFeedback(null);
-      }, 1000);
+      }, 700);
     }
   };
 
@@ -357,11 +355,12 @@ useEffect(() => {
         <div className="mt-6 space-y-3">
           {question.options.map((option, index) => (
             <motion.button
+              style={{cursor:'pointer'}}
               key={index}
               onClick={() => feedback?.type !== 'correct' && handleAnswerSelect(index)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
-              className={`w-full p-2 rounded-lg text-right border-2 transition-all
+              className={`button w-full p-2 rounded-lg text-right border-2 transition-all
                 ${
                   selectedAnswer === index
                     ? feedback?.type === 'correct'

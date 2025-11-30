@@ -123,12 +123,12 @@
   * {
     @apply border-border outline-ring/50;
   }
-
+  button {
+    @apply cursor-pointer;
+  }
   body {
     @apply bg-background text-foreground;
-    .button {
-      cursor: pointer;
-    }
+
 
   }
 }
@@ -149,7 +149,9 @@
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
-
+  .button {
+    cursor: pointer;
+  }
     h3 {
       font-size: var(--text-lg);
       font-weight: var(--font-weight-medium);

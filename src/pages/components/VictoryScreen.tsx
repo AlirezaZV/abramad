@@ -8,20 +8,6 @@ interface VictoryScreenProps {
   lastName: string;
 }
 
-// Generate confetti pieces data once
-const generateConfetti = () => {
-  return Array.from({ length: 1000 }).map((_, i) => ({
-    id: i,
-    x: Math.random() * window.innerWidth,
-    y: -20 - Math.random() * 100,
-    rotation: Math.random() * 360,
-    scale: Math.random() * 0.5 + 0.5,
-    color: ['#FFD700', '#C0C0C0', '#DAA520', '#FFFFFF'][Math.floor(Math.random() * 4)],
-    velocityX: (Math.random() - 0.5) * 2,
-    velocityY: Math.random() * 3 + 2,
-    duration: Math.random() * 3 + 3,
-  }));
-};
 
 export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
   // const [confettiPieces] = useState(() => generateConfetti());
@@ -163,7 +149,7 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
         </motion.div>
 
         {/* Success badges */}
-        <motion.div
+        {/* <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 1.6 }}
@@ -189,7 +175,7 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
               <p className="text-white text-sm">{badge.label}</p>
             </motion.div>
           ))}
-        </motion.div>
+        </motion.div> */}
 
         {/* Final message */}
         <motion.div
@@ -199,7 +185,7 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
           className="bg-gradient-to-r from-blue-600/20 to-green-600/20 backdrop-blur-sm border border-blue-500/30 rounded-xl p-6"
         >
           <p className="text-white text-2xl">
-            امیدوارم اسمتو بین برنده‌های قرعه‌کشی ۱۶ آذر ببینم! 🎁
+            امیدوارم اسمتو بین برنده‌های قرعه‌کشی ببینم! 🎁
           </p>
         </motion.div>
 
@@ -212,16 +198,15 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
         >
           <button
             onClick={() => window.location.reload()}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg hover:shadow-xl"
+              className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors shadow-lg hover:shadow-xl"
+
           >
             شروع دوباره
           </button>
-          <button
-            onClick={() => window.location.href = '/'}
-            className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors shadow-lg hover:shadow-xl"
-          >
-            بازگشت به وبسایت
-          </button>
+<button
+  onClick={() => window.location.href = 'https://www.abramad.com/solutions/disaster-recovery/'}
+            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg hover:shadow-xl"
+>مشاهده محصول</button>
         </motion.div>
 
         {/* Decorative elements */}

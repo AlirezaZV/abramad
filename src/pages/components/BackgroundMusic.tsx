@@ -13,22 +13,9 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
   const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
-    // Wait a bit for the audio context to be ready
-    const timer = setTimeout(() => {
       setIsLoaded(true);
-      if (autoPlay) {
-        // Try to start playing background music
-        const cleanup = playSound('/music.mp3', { loop: true, volume: 0.5 });
-        setHasStarted(true);
-        
-        return () => {
-          cleanup();
-        };
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [autoPlay, playSound]);
+      handleToggle();
+  }, []);
 
   const handleToggle = () => {
     if (!hasStarted) {
@@ -65,9 +52,9 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
             {isMuted ? (
               <motion.div
                 key="muted"
-                initial={{ rotate: -180, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 180, opacity: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{  opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
                 <VolumeX className="w-6 h-6" />
@@ -75,9 +62,9 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
             ) : (
               <motion.div
                 key="unmuted"
-                initial={{ rotate: -180, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 180, opacity: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{  opacity: 1 }}
+                exit={{  opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
                 <Volume2 className="w-6 h-6" />
