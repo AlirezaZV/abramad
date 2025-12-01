@@ -1,41 +1,49 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FireCrisis } from './FireCrisis';
-import { ServerCrisis } from './ServerCrisis';
-import { CyberCrisis } from './CyberCrisis';
-import { VictoryScreen } from './VictoryScreen';
-import { GameTimeline } from './GameTimeline';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FireCrisis } from "./FireCrisis";
+import { ServerCrisis } from "./ServerCrisis";
+import { CyberCrisis } from "./CyberCrisis";
+import { VictoryScreen } from "./VictoryScreen";
+import { GameTimeline } from "./GameTimeline";
+import type { UserData } from "../../types/user";
 
 interface CrisisGameProps {
   firstName: string;
   lastName: string;
+  userData?: UserData;
 }
 
-type CrisisStage = 'fire' | 'transition1' | 'server' | 'transition2' | 'cyber' | 'victory';
+type CrisisStage =
+  | "fire"
+  | "transition1"
+  | "server"
+  | "transition2"
+  | "cyber"
+  | "victory";
 
-export function CrisisGame({ firstName, lastName }: CrisisGameProps) {
-  const [stage, setStage] = useState<CrisisStage>('fire');
+export function CrisisGame({ firstName, lastName, userData }: CrisisGameProps) {
+  const [stage, setStage] = useState<CrisisStage>("fire");
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const handleFireComplete = () => {
-    setStage('transition1');
+    setStage("transition1");
   };
 
   const handleServerComplete = () => {
-    setStage('transition2');
+    setStage("transition2");
   };
 
   const handleCyberComplete = () => {
-    setStage('victory');
+    setStage("victory");
   };
 
   const handleContinueToServer = () => {
-    setStage('server');
+    setStage("server");
     setCurrentQuestion(0);
   };
 
   const handleContinueToCyber = () => {
-    setStage('cyber');
+    setStage("cyber");
     setCurrentQuestion(0);
   };
 
@@ -44,28 +52,29 @@ export function CrisisGame({ firstName, lastName }: CrisisGameProps) {
   };
 
   // Determine which crisis to show in timeline
-  const getCurrentCrisis = (): 'fire' | 'server' | 'cyber' | 'victory' => {
-    if (stage === 'fire' || stage === 'transition1') return 'fire';
-    if (stage === 'server' || stage === 'transition2') return 'server';
-    if (stage === 'cyber') return 'cyber';
-    return 'victory';
+  const getCurrentCrisis = (): "fire" | "server" | "cyber" | "victory" => {
+    if (stage === "fire" || stage === "transition1") return "fire";
+    if (stage === "server" || stage === "transition2") return "server";
+    if (stage === "cyber") return "cyber";
+    return "victory";
   };
 
-  const showTimeline = stage !== 'victory' && stage !== 'transition1' && stage !== 'transition2';
+  const showTimeline =
+    stage !== "victory" && stage !== "transition1" && stage !== "transition2";
 
   return (
     <div className="min-h-screen">
       <AnimatePresence mode="wait">
-        {stage === 'fire' && (
-          <FireCrisis 
-            key="fire" 
+        {stage === "fire" && (
+          <FireCrisis
+            key="fire"
             onComplete={handleFireComplete}
             onQuestionChange={handleQuestionChange}
             firstName={firstName}
           />
         )}
 
-        {stage === 'transition1' && (
+        {stage === "transition1" && (
           <motion.div
             key="transition1"
             initial={{ opacity: 0 }}
@@ -79,7 +88,8 @@ export function CrisisGame({ firstName, lastName }: CrisisGameProps) {
               transition={{ delay: 0.5 }}
               className="text-white text-center max-w-2xl mb-8 leading-relaxed"
             >
-              کارت خوب بود ولی این فقط آتش‌سوزی نیست که می‌تونه یه شرکت رو از پا دربیاره!
+              کارت خوب بود ولی این فقط آتش‌سوزی نیست که می‌تونه یه شرکت رو از پا
+              دربیاره!
             </motion.p>
 
             <motion.button
@@ -94,16 +104,16 @@ export function CrisisGame({ firstName, lastName }: CrisisGameProps) {
           </motion.div>
         )}
 
-        {stage === 'server' && (
-          <ServerCrisis 
-            key="server" 
+        {stage === "server" && (
+          <ServerCrisis
+            key="server"
             onComplete={handleServerComplete}
             onQuestionChange={handleQuestionChange}
             firstName={firstName}
           />
         )}
 
-        {stage === 'transition2' && (
+        {stage === "transition2" && (
           <motion.div
             key="transition2"
             initial={{ opacity: 0 }}
@@ -132,24 +142,29 @@ export function CrisisGame({ firstName, lastName }: CrisisGameProps) {
           </motion.div>
         )}
 
-        {stage === 'cyber' && (
-          <CyberCrisis 
-            key="cyber" 
+        {stage === "cyber" && (
+          <CyberCrisis
+            key="cyber"
             onComplete={handleCyberComplete}
             onQuestionChange={handleQuestionChange}
             firstName={firstName}
           />
         )}
 
-        {stage === 'victory' && (
-          <VictoryScreen key="victory" firstName={firstName} lastName={lastName} />
+        {stage === "victory" && (
+          <VictoryScreen
+            key="victory"
+            firstName={firstName}
+            lastName={lastName}
+            userData={userData}
+          />
         )}
       </AnimatePresence>
 
       {/* Timeline - show during crisis stages */}
       {showTimeline && (
-        <GameTimeline 
-          currentCrisis={getCurrentCrisis()} 
+        <GameTimeline
+          currentCrisis={getCurrentCrisis()}
           currentQuestion={currentQuestion}
         />
       )}

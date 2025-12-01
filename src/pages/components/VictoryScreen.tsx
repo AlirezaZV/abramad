@@ -1,16 +1,87 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Logo } from './Logo';
-import ReactConfetti from 'react-confetti';
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Logo } from "./Logo";
+import ReactConfetti from "react-confetti";
+import type { UserData } from "../../types/user";
 
 interface VictoryScreenProps {
   firstName: string;
   lastName: string;
+  userData?: UserData;
 }
 
+type SubmissionStatus = "idle" | "pending" | "success" | "error";
 
-export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
+export function VictoryScreen({ firstName, userData }: VictoryScreenProps) {
   // const [confettiPieces] = useState(() => generateConfetti());
+  const [submissionStatus, setSubmissionStatus] =
+    useState<SubmissionStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [retrySignal, setRetrySignal] = useState(0);
+
+  useEffect(() => {
+    if (!userData) {
+      return undefined;
+    }
+
+    const controller = new AbortController();
+
+    const persistUserData = async () => {
+      setSubmissionStatus("pending");
+      setErrorMessage(null);
+
+      try {
+        const payload: UserData = {
+          ...userData,
+          date: userData.date || new Date().toISOString(),
+        };
+
+        const response = await fetch("/api/user-data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          let message = "Failed to save user data";
+          try {
+            const body = await response.json();
+            if (typeof body.error === "string" && body.error.trim().length) {
+              message = body.error;
+            }
+          } catch (error) {
+            console.warn("Unable to parse error response", error);
+          }
+          throw new Error(message);
+        }
+
+        setSubmissionStatus("success");
+      } catch (error) {
+        if ((error as DOMException).name === "AbortError") {
+          return;
+        }
+        setSubmissionStatus("error");
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "خطایی در ذخیره اطلاعات رخ داد"
+        );
+      }
+    };
+
+    void persistUserData();
+
+    return () => {
+      controller.abort();
+    };
+  }, [userData, retrySignal]);
+
+  const handleRetry = () => {
+    setRetrySignal((prev) => prev + 1);
+  };
 
   return (
     <motion.div
@@ -18,7 +89,7 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-green-900 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden"
     >
-            {/* Background with server image */}
+      {/* Background with server image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -59,31 +130,31 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
           />
         ))}
       </div> */}
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: 99999, // Higher than the modal
-            pointerEvents: 'none', // Prevent interaction issues
-          }}
-        >
-          <ReactConfetti
-            gravity={0.3}
-            width={window.innerWidth}
-            height={window.innerHeight}
-            initialVelocityX={2}
-            initialVelocityY={5}
-            numberOfPieces={1000}
-            opacity={1}
-            run
-            wind={0}
-            recycle={false}
-            colors={['#54BA60', '#264A9F', '#4272B8', '#FFFFFF']}
-          />
-        </div>
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: 99999, // Higher than the modal
+          pointerEvents: "none", // Prevent interaction issues
+        }}
+      >
+        <ReactConfetti
+          gravity={0.3}
+          width={window.innerWidth}
+          height={window.innerHeight}
+          initialVelocityX={2}
+          initialVelocityY={5}
+          numberOfPieces={1000}
+          opacity={1}
+          run
+          wind={0}
+          recycle={false}
+          colors={["#54BA60", "#264A9F", "#4272B8", "#FFFFFF"]}
+        />
+      </div>
       {/* Light burst animation */}
       <motion.div
         initial={{ scale: 0, opacity: 1 }}
@@ -132,7 +203,8 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
           className="space-y-4"
         >
           <p className="text-white text-2xl">
-            {firstName} عزیز، تبریک می‌گیم، تو از هر سه بحران سربلند بیرون اومدی!
+            {firstName} عزیز، تبریک می‌گیم، تو از هر سه بحران سربلند بیرون
+            اومدی!
           </p>
         </motion.div>
 
@@ -144,7 +216,12 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
           className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4"
         >
           <p className="text-white leading-relaxed">
-            الان می‌دونی چطور می‌شه حتی وسط آتش‌سوزی، قطعی سرویس یا حمله سایبری، جریان کار یه سازمان رو زنده نگه داشت. این همون کاریه که سرویس <span className="text-green-400">بازیابی از بحران ابرآمد (ویژه راهکاران)</span> برای سازمان‌ها انجام می‌ده.
+            الان می‌دونی چطور می‌شه حتی وسط آتش‌سوزی، قطعی سرویس یا حمله سایبری،
+            جریان کار یه سازمان رو زنده نگه داشت. این همون کاریه که سرویس{" "}
+            <span className="text-green-400">
+              بازیابی از بحران ابرآمد (ویژه راهکاران)
+            </span>{" "}
+            برای سازمان‌ها انجام می‌ده.
           </p>
         </motion.div>
 
@@ -198,16 +275,41 @@ export function VictoryScreen({ firstName, lastName }: VictoryScreenProps) {
         >
           <button
             onClick={() => window.location.reload()}
-              className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors shadow-lg hover:shadow-xl"
-
+            className="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors shadow-lg hover:shadow-xl"
           >
             شروع دوباره
           </button>
-<button
-  onClick={() => window.location.href = 'https://www.abramad.com/solutions/disaster-recovery/'}
+          <button
+            onClick={() =>
+              (window.location.href =
+                "https://www.abramad.com/solutions/disaster-recovery/")
+            }
             className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg hover:shadow-xl"
->مشاهده محصول</button>
+          >
+            مشاهده محصول
+          </button>
         </motion.div>
+
+        <div className="text-center text-sm text-white/80 space-y-2">
+          {submissionStatus === "pending" && <p>در حال ذخیره اطلاعات...</p>}
+          {submissionStatus === "success" && (
+            <p className="text-green-300">اطلاعاتت با موفقیت ذخیره شد.</p>
+          )}
+          {submissionStatus === "error" && (
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-red-300">
+                ذخیره اطلاعات انجام نشد.
+                {errorMessage ? ` (${errorMessage})` : ""}
+              </p>
+              <button
+                onClick={handleRetry}
+                className="px-4 py-2 bg-red-600/30 border border-red-500/50 text-white rounded-lg hover:bg-red-600/50 transition-colors"
+              >
+                تلاش دوباره برای ذخیره
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Decorative elements */}
         {/* <motion.div

@@ -1,35 +1,32 @@
-import { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight } from 'lucide-react';
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from './ui/input-otp';
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ArrowRight } from "lucide-react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
+import type { UserFormPayload } from "../../types/user";
 
 interface UserFormProps {
-  onSubmit: (data: { firstName: string; lastName: string; phone: string; email: string }) => void;
+  onSubmit: (data: UserFormPayload) => void;
   onClose?: () => void;
 }
 
 export function UserForm({ onSubmit, onClose }: UserFormProps) {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
+  const [formData, setFormData] = useState<UserFormPayload>({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
   });
   const [errors, setErrors] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
+    firstName: "",
+    lastName: "",
+    phone: "",
   });
   const [showOTP, setShowOTP] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [otpError, setOtpError] = useState('');
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState("");
 
   const validatePhone = (phone: string) => {
     const phoneRegex = /^09\d{9}$/;
@@ -38,9 +35,12 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
 
   const handlePhoneBlur = () => {
     if (formData.phone && !validatePhone(formData.phone)) {
-      setErrors({ ...errors, phone: 'شماره تلفن باید با 09 شروع شود و ۱۱ رقم باشد' });
+      setErrors({
+        ...errors,
+        phone: "شماره تلفن باید با 09 شروع شود و ۱۱ رقم باشد",
+      });
     } else {
-      setErrors({ ...errors, phone: '' });
+      setErrors({ ...errors, phone: "" });
     }
   };
 
@@ -49,10 +49,15 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
 
     // Validation
     const newErrors = {
-      firstName: formData.firstName.trim() === '' ? 'نام الزامی است' : '',
-      lastName: formData.lastName.trim() === '' ? 'نام خانوادگی الزامی است' : '',
-      phone: formData.phone.trim() === '' ? 'شماره تماس الزامی است' : 
-             !validatePhone(formData.phone) ? 'شماره تلفن نامعتبر است' : '',
+      firstName: formData.firstName.trim() === "" ? "نام الزامی است" : "",
+      lastName:
+        formData.lastName.trim() === "" ? "نام خانوادگی الزامی است" : "",
+      phone:
+        formData.phone.trim() === ""
+          ? "شماره تماس الزامی است"
+          : !validatePhone(formData.phone)
+          ? "شماره تلفن نامعتبر است"
+          : "",
     };
 
     setErrors(newErrors);
@@ -76,8 +81,8 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
 
   const handleBackToForm = () => {
     setShowOTP(false);
-    setOtp('');
-    setOtpError('');
+    setOtp("");
+    setOtpError("");
   };
 
   return (
@@ -114,13 +119,17 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                   id="firstName"
                   type="text"
                   value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 text-right"
                   placeholder="نام خود را وارد کنید"
                   dir="rtl"
                 />
                 {errors.firstName && (
-                  <p className="text-red-400 text-sm text-right">{errors.firstName}</p>
+                  <p className="text-red-400 text-sm text-right">
+                    {errors.firstName}
+                  </p>
                 )}
               </div>
 
@@ -133,13 +142,17 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                   id="lastName"
                   type="text"
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 text-right"
                   placeholder="نام خانوادگی خود را وارد کنید"
                   dir="rtl"
                 />
                 {errors.lastName && (
-                  <p className="text-red-400 text-sm text-right">{errors.lastName}</p>
+                  <p className="text-red-400 text-sm text-right">
+                    {errors.lastName}
+                  </p>
                 )}
               </div>
 
@@ -152,7 +165,9 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   onBlur={handlePhoneBlur}
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500"
                   placeholder="09123456789"
@@ -160,7 +175,9 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                   dir="ltr"
                 />
                 {errors.phone && (
-                  <p className="text-red-400 text-sm text-right">{errors.phone}</p>
+                  <p className="text-red-400 text-sm text-right">
+                    {errors.phone}
+                  </p>
                 )}
               </div>
 
@@ -173,7 +190,9 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500"
                   placeholder="email@example.com"
                   dir="ltr"
@@ -197,12 +216,12 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
           >
-            <h2 className="text-white text-center mb-2">
-              تایید شماره تماس
-            </h2>
+            <h2 className="text-white text-center mb-2">تایید شماره تماس</h2>
 
             <p className="text-gray-300 mb-6 text-center">
-              کد ۴ رقمی ارسال شده به شماره <span className="text-blue-400 font-mono">{formData.phone}</span> را وارد کنید:
+              کد ۴ رقمی ارسال شده به شماره{" "}
+              <span className="text-blue-400 font-mono">{formData.phone}</span>{" "}
+              را وارد کنید:
             </p>
 
             <div className="flex justify-center mb-6">
@@ -213,16 +232,30 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                 dir="ltr"
               >
                 <InputOTPGroup>
-                  <InputOTPSlot index={0} className="bg-gray-700 border-gray-600 text-white" />
-                  <InputOTPSlot index={1} className="bg-gray-700 border-gray-600 text-white" />
-                  <InputOTPSlot index={2} className="bg-gray-700 border-gray-600 text-white" />
-                  <InputOTPSlot index={3} className="bg-gray-700 border-gray-600 text-white" />
+                  <InputOTPSlot
+                    index={0}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                  <InputOTPSlot
+                    index={1}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                  <InputOTPSlot
+                    index={2}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                  <InputOTPSlot
+                    index={3}
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
                 </InputOTPGroup>
               </InputOTP>
             </div>
 
             {otpError && (
-              <p className="text-red-400 text-sm text-center mb-4">{otpError}</p>
+              <p className="text-red-400 text-sm text-center mb-4">
+                {otpError}
+              </p>
             )}
 
             <div className="flex flex-col gap-3">
@@ -237,7 +270,7 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
               </Button>
 
               <p className="text-gray-400 text-sm text-center">
-                کد ارسال نشد؟{' '}
+                کد ارسال نشد؟{" "}
                 <button className="text-blue-400 hover:text-blue-300 transition-colors">
                   ارسال مجدد
                 </button>

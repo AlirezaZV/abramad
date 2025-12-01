@@ -24,6 +24,29 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Persisting player submissions
+
+1. Duplicate `.env.example` to `.env.local` and provide real values for `MONGODB_URI` (for a local instance use `mongodb://localhost:27017/abramad`). Optional overrides: `MONGODB_DB` (defaults to `abramad`) and `MONGODB_COLLECTION` (`participants`).
+2. Ensure the target MongoDB cluster allows connections from your runtime environment.
+3. Install dependencies (`npm install`) so the new `mongodb` driver is available.
+4. Run the Next.js dev or production server (`npm run dev` or `npm run start`). Static exports served from the `out` folder cannot execute API routes, so `/api/user-data` will 404 unless the Node server is running.
+
+When a player finishes all crises, `VictoryScreen` automatically calls the `POST /api/user-data` endpoint with the payload:
+
+```json
+{
+  "firstName": "Sara",
+  "lastName": "Azari",
+  "phone": "09121234567",
+  "email": "player@example.com",
+  "date": "2025-12-01T09:30:00.000Z"
+}
+```
+
+The API validates required fields and inserts the document into the configured MongoDB collection with both the provided `date` (ISO-8601 string) and a server-side `createdAt` timestamp.
+
+> Note: if you prefer a different port (e.g., `npm run dev -- --port 3001`), the API remains available at `http://localhost:<port>/api/user-data` as long as you are running the Next.js server rather than a static export.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

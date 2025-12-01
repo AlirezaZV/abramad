@@ -5,14 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import Lottie from "lottie-react";
 import { UserForm } from "./UserForm";
 import { Bold } from "lucide-react";
+import type { UserFormPayload } from "../../types/user";
 
 interface LandingPageProps {
-  onFormSubmit: (data: {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-  }) => void;
+  onFormSubmit: (data: UserFormPayload) => void;
 }
 
 export function LandingPage({ onFormSubmit }: LandingPageProps) {
@@ -34,12 +30,7 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
     setShowForm(false);
   };
 
-  const handleFormSubmit = (data: {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-  }) => {
+  const handleFormSubmit = (data: UserFormPayload) => {
     onFormSubmit(data);
   };
 
@@ -77,10 +68,10 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-between">
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1}}
+          animate={{ opacity: 1 }}
           transition={{ duration: 2 }}
           className="max-w-2xl w-full text-center space-y-8 flex-1 flex flex-col justify-center px-4"
-          style={{ zIndex: 200,translateY: 60 }}
+          style={{ zIndex: 200, translateY: 60 }}
         >
           {/* Logo */}
           <motion.div
@@ -155,7 +146,7 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
         </motion.div>
 
         {/* Fire Animation at Bottom */}
-        <div className="relative w-full flex justify-center items-end mb-0 overflow-hidden" >
+        <div className="relative w-full flex justify-center items-end mb-0 overflow-hidden">
           <div className="flex w-full -mb-10">
             {fireAnimationData && (
               <>
@@ -164,7 +155,7 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
                   loop={true}
                   className="w-100 lg:w-128 h-full flex-shrink-0"
                 />
-                 <Lottie
+                <Lottie
                   animationData={fireAnimationData}
                   loop={true}
                   className="w-100 lg:w-128 h-full flex-shrink-0"
@@ -194,9 +185,7 @@ export function LandingPage({ onFormSubmit }: LandingPageProps) {
             />
 
             {/* Form Container */}
-            <motion.div
-              className="relative z-10 w-full max-w-md"
-            >
+            <motion.div className="relative z-10 w-full max-w-md">
               <UserForm onSubmit={handleFormSubmit} onClose={handleFormClose} />
             </motion.div>
           </motion.div>
