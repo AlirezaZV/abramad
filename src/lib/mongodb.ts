@@ -1,4 +1,4 @@
-import { MongoClient, Collection } from "mongodb";
+import { MongoClient, Collection, Document } from "mongodb";
 
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/abramad";
 
@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === "development") {
   clientPromise = client.connect();
 }
 
-export async function getMongoCollection<T>(
+export async function getMongoCollection<T extends Document = Document>(
   collectionName: string
 ): Promise<Collection<T>> {
   const client = await clientPromise;

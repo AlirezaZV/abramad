@@ -32,26 +32,28 @@ const questions: Question[] = [
     correctFeedback: 'درسته. فروش آنلاین شدیداً تحت تاثیر خدمات سریع و روان زیرساختیه.',
     incorrectFeedback: 'نه، بیا دوباره تلاش کنیم.',
   },
-  {
-    id: 2,
-    question: 'به‌نظرت داون‌تایم یک‌ساعته توی همچین پروموشنی، حدوداً چقدر برای این برند هزینه داره؟',
-    options: [
-      { text: '۳۰ میلیون تومان', isCorrect: true },
-      { text: '۱۵ میلیون تومان', isCorrect: false },
-      { text: '۳۵ میلیون تومان', isCorrect: false },
-      { text: '۲۰ میلیون تومان', isCorrect: false },
-    ],
-    correctFeedback: 'درسته. اگه زیرساخت یاری‌ نکنه، پروموشن‌ها به جای سودرسانی تبدیل به ضرر خالص می‌شن.',
-    incorrectFeedback: 'نه، بیا دوباره تلاش کنیم.',
-  },
+{
+  id: 2,
+  question:
+    'به‌نظرت چند درصد از برندهای فروشگاهی/خرده‌فروشی در طول سال حداقل یک‌بار چنین داون‌تایم جدی‌ای رو تجربه می‌کنن؟',
+  options: [
+    { text: 'زیر ۱۰٪', isCorrect: false },
+    { text: 'حدود ۲۰٪', isCorrect: false },
+    { text: 'حدود ۴۰ تا ۶۰٪', isCorrect: true },
+    { text: 'بالاتر از ۸۰٪', isCorrect: false },
+  ],
+  correctFeedback:
+    'درسته. اگه زیرساخت یاری‌ نکنه، پروموشن‌ها به جای سودرسانی تبدیل به ضرر خالص می‌شن.',
+  incorrectFeedback: 'نه، بیا دوباره تلاش کنیم.',
+},
   {
     id: 3,
-    question: 'ولی خوشبختانه این برند از قبل به همچین روزی فکر کرده بود... به‌نظرت چقدر طول می‌کشه تا همه‌ اطلاعات این سرور اصلی با سرور پشتیبان سینک بشن؟',
+    question: 'ولی خوشبختانه این برند از قبل به همچین روزی فکر کرده بود... به‌نظرت چقدر طول می‌کشه تا همه‌ اطلاعات سرور اصلی‌شون با سایت دومشون سینک بشه؟',
     options: [
-      { text: '۱ ساعت', isCorrect: false },
-      { text: '۳۰ دقیقه', isCorrect: false },
-      { text: '۵ ساعت', isCorrect: false },
-      { text: 'بلادرنگ', isCorrect: true },
+      { text: '5 ساعت', isCorrect: false },
+      { text: '12 دقیقه', isCorrect: false },
+      { text: '24 ساعت', isCorrect: false },
+      { text: 'کمتر از نیم‌ساعت', isCorrect: true },
     ],
     correctFeedback: 'درسته. داده‌ها به‌‌طور لحظه‌ای و بی‌وقفه سینک می‌شن.',
     incorrectFeedback: 'نه، بیا دوباره تلاش کنیم.',

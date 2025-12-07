@@ -262,7 +262,7 @@ export function VictoryScreen({ firstName, userData }: VictoryScreenProps) {
           className="bg-gradient-to-r from-blue-600/20 to-green-600/20 backdrop-blur-sm border border-blue-500/30 rounded-xl p-6"
         >
           <p className="text-white text-2xl">
-            امیدوارم اسمتو بین برنده‌های قرعه‌کشی ببینم! 🎁
+            امیدوارم اسمتو بین برنده‌های قرعه‌کشی‌مون ببینم! 🎁
           </p>
         </motion.div>
 

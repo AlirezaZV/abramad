@@ -49,7 +49,7 @@ const questions: Question[] = [
     question: 'اگه این سازمان برنامه‌ بازیابی از بحران داشت، سرویس‌هاش توی سایت دوم چه لایه‌های محافظتی‌ای داشتن؟',
     options: [
       { text: 'فایروال و سیستم‌های جلوگیری از نفوذ', isCorrect: false },
-      { text: 'رمزنگاری داده‌ها روی سرورها', isCorrect: false },
+      { text: 'رمزنگاری داده‌ها در مسیر انتقال', isCorrect: false },
       { text: 'مانیتورینگ هوشمند و هشداردهی', isCorrect: false },
       { text: 'همهٔ موارد', isCorrect: true },
     ],
