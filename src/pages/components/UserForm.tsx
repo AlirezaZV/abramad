@@ -23,10 +23,19 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
     firstName: "",
     lastName: "",
     phone: "",
+    email: "",
   });
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [formMessage, setFormMessage] = useState<
+    { type: "error" | "success"; text: string }
+  | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRequestingOtp, setIsRequestingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [otpStatusMessage, setOtpStatusMessage] = useState<string | null>(null);
+  const [otpPreview, setOtpPreview] = useState<string | null>(null);
 
   const validatePhone = (phone: string) => {
     const phoneRegex = /^09\d{9}$/;
@@ -44,7 +53,86 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const checkExistingUser = async () => {
+    try {
+      const response = await fetch("/api/user-check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: formData.phone,
+          email: formData.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "بررسی اطلاعات با خطا روبه‌رو شد");
+      }
+
+      if (data.exists) {
+        setFormMessage({
+          type: "error",
+          text:
+            data.message ??
+            "شما با این ایمیل یا شماره موبایل قبلا در مسابقه شرکت کرده‌اید!",
+        });
+        return false;
+      }
+
+      setFormMessage(null);
+      return true;
+    } catch (error) {
+      setFormMessage({
+        type: "error",
+        text:
+          error instanceof Error
+            ? error.message
+            : "برقراری ارتباط با سرور ممکن نشد",
+      });
+      return false;
+    }
+  };
+
+  const requestOtp = async () => {
+    setOtpError("");
+    setOtpStatusMessage(null);
+    setOtpPreview(null);
+    setIsRequestingOtp(true);
+
+    try {
+      const response = await fetch("/api/otp/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: formData.phone }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error ?? "ارسال کد تایید با خطا مواجه شد");
+      }
+
+      setOtpStatusMessage(data.message ?? "کد تایید ارسال شد");
+
+      if (data.otpPreview) {
+        setOtpPreview(data.otpPreview);
+      }
+
+      return true;
+    } catch (error) {
+      setOtpError(
+        error instanceof Error
+          ? error.message
+          : "ارسال کد تایید با خطا روبه‌رو شد"
+      );
+      return false;
+    } finally {
+      setIsRequestingOtp(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validation
@@ -58,24 +146,77 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
           : !validatePhone(formData.phone)
           ? "شماره تلفن نامعتبر است"
           : "",
+      email:
+        formData.email.trim() === "" ? "ایمیل سازمانی الزامی است!" : "",
     };
 
     setErrors(newErrors);
 
-    if (!newErrors.firstName && !newErrors.lastName && !newErrors.phone) {
-      setShowOTP(true);
+    const isFormValid =
+      !newErrors.firstName &&
+      !newErrors.lastName &&
+      !newErrors.phone &&
+      !newErrors.email;
+
+    if (!isFormValid) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const isUnique = await checkExistingUser();
+
+      if (!isUnique) {
+        return;
+      }
+
+      const otpRequested = await requestOtp();
+
+      if (otpRequested) {
+        setShowOTP(true);
+        setOtp("");
+        setOtpError("");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleOTPComplete = (value: string) => {
+  const verifyOtp = async (value: string) => {
+    setIsVerifyingOtp(true);
+
+    try {
+      const response = await fetch("/api/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: formData.phone, code: value }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error ?? "کد تایید نامعتبر است");
+      }
+
+      setOtpError("");
+      onSubmit(formData);
+    } catch (error) {
+      setOtpError(
+        error instanceof Error ? error.message : "کد تایید نامعتبر است"
+      );
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleOtpChange = (value: string) => {
     setOtp(value);
-    // Simulate OTP verification
-    if (value.length === 4) {
-      // In a real app, you would verify the OTP with backend
-      // For demo purposes, accept any 4-digit code
-      setTimeout(() => {
-        onSubmit(formData);
-      }, 500);
+
+    if (value.length === 4 && !isVerifyingOtp) {
+      void verifyOtp(value);
+    } else if (value.length < 4) {
+      setOtpError("");
     }
   };
 
@@ -83,6 +224,16 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
     setShowOTP(false);
     setOtp("");
     setOtpError("");
+    setOtpStatusMessage(null);
+    setOtpPreview(null);
+  };
+
+  const handleResendOtp = async () => {
+    if (isRequestingOtp) {
+      return;
+    }
+
+    await requestOtp();
   };
 
   return (
@@ -108,6 +259,18 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
             <h2 className="text-white text-center mb-2">
               قبل از شروع، کمک کن بهتر بشناسمت.
             </h2>
+
+            {formMessage && (
+              <p
+                className={`text-sm mb-3 text-center ${
+                  formMessage.type === "error"
+                    ? "text-red-400"
+                    : "text-green-400"
+                }`}
+              >
+                {formMessage.text}
+              </p>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6 mt-6">
               {/* First Name Field */}
@@ -184,7 +347,7 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
               {/* Email Field */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-200">
-                  ایمیل <span className="text-gray-400 text-sm">(اختیاری)</span>
+                  ایمیل <span className="text-gray-400 text-sm">(سازمانی)</span>
                 </Label>
                 <Input
                   id="email"
@@ -197,6 +360,11 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                   placeholder="email@example.com"
                   dir="ltr"
                 />
+                                {errors.email && (
+                  <p className="text-red-400 text-sm text-right">
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
               {/* Submit Button */}
@@ -204,8 +372,9 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                 type="submit"
                 className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:from-blue-700 hover:to-green-600 text-white"
                 size="lg"
+                disabled={isSubmitting}
               >
-                بریم شرکت رو نجات بدیم!
+                {isSubmitting ? "در حال بررسی..." : "بریم شرکت رو نجات بدیم!"}
               </Button>
             </form>
           </motion.div>
@@ -224,11 +393,23 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
               را وارد کنید:
             </p>
 
+            {otpStatusMessage && (
+              <p className="text-blue-300 text-sm text-center mb-4">
+                {otpStatusMessage}
+              </p>
+            )}
+
+            {otpPreview && (
+              <p className="text-emerald-300 text-sm text-center mb-4">
+                کد تست: <span className="font-mono text-lg">{otpPreview}</span>
+              </p>
+            )}
+
             <div className="flex justify-center mb-6">
               <InputOTP
                 maxLength={4}
                 value={otp}
-                onChange={handleOTPComplete}
+                onChange={handleOtpChange}
                 dir="ltr"
               >
                 <InputOTPGroup>
@@ -258,6 +439,12 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
               </p>
             )}
 
+            {isVerifyingOtp && (
+              <p className="text-gray-400 text-sm text-center mb-4">
+                در حال تایید کد...
+              </p>
+            )}
+
             <div className="flex flex-col gap-3">
               {/* Back button */}
               <Button
@@ -271,8 +458,13 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
 
               <p className="text-gray-400 text-sm text-center">
                 کد ارسال نشد؟{" "}
-                <button className="text-blue-400 hover:text-blue-300 transition-colors">
-                  ارسال مجدد
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={isRequestingOtp}
+                  className="text-blue-400 hover:text-blue-300 transition-colors disabled:opacity-50"
+                >
+                  {isRequestingOtp ? "در حال ارسال..." : "ارسال مجدد"}
                 </button>
               </p>
             </div>

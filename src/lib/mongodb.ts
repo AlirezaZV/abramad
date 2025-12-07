@@ -1,6 +1,6 @@
 import { MongoClient, Collection } from "mongodb";
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/abramad";
 
 if (!uri) {
   throw new Error("MONGODB_URI is not set. Define it in your environment.");
