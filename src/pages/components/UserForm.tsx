@@ -42,6 +42,11 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
     return phoneRegex.test(phone);
   };
 
+  const validateSystemgroupEmail = (email: string) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@systemgroup\.net$/i;
+    return emailRegex.test(email.trim());
+  };
+
   const handlePhoneBlur = () => {
     if (formData.phone && !validatePhone(formData.phone)) {
       setErrors({
@@ -147,7 +152,11 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
           ? "شماره تلفن نامعتبر است"
           : "",
       email:
-        formData.email.trim() === "" ? "ایمیل سازمانی الزامی است!" : "",
+        formData.email.trim() === ""
+          ? "ایمیل سازمانی الزامی است!"
+          : !validateSystemgroupEmail(formData.email)
+          ? "ایمیل سازمانی باید متعلق به دامنه systemgroup.net باشد"
+          : "",
     };
 
     setErrors(newErrors);
@@ -357,7 +366,7 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500"
-                  placeholder="email@example.com"
+                  placeholder="user@systemgroup.net"
                   dir="ltr"
                 />
                                 {errors.email && (

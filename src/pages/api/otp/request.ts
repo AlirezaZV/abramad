@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getMongoCollection } from "../../../lib/mongodb";
+import { sendMagfaOtpSms } from "../../../lib/magfa";
 
 interface OtpDocument {
   phone: string;
@@ -72,6 +73,15 @@ export default async function handler(
     const expiresInMs = isExistingValid
       ? Math.max(OTP_TTL_MS - existingAge, 0)
       : OTP_TTL_MS;
+
+    try {
+      await sendMagfaOtpSms({ phone, code: otpCode });
+    } catch (smsError) {
+      console.error("Failed to send OTP SMS", smsError);
+      return res
+        .status(502)
+        .json({ success: false, error: "Failed to send OTP SMS" });
+    }
 
     return res.status(200).json({
       success: true,
