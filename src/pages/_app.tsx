@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
+import { Toaster } from "sonner";
 import { SplashScreen } from "./components/SplashScreen";
 import { LandingPage } from "./components/LandingPage";
 import { CrisisGame } from "./components/CrisisGame";
@@ -137,6 +138,7 @@ export default function App() {
           )}
         </AnimatePresence>
       </div>
+      <Toaster position="top-right" />
     </AudioProvider>
   );
 }

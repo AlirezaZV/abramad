@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, VolumeX } from 'lucide-react';
-import { useAudio } from '../../contexts/AudioContext';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Volume2, VolumeX } from "lucide-react";
+import { useAudio } from "../../contexts/AudioContext";
 
 interface BackgroundMusicProps {
   autoPlay?: boolean;
@@ -13,17 +13,46 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
   const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
-      setIsLoaded(true);
-      handleToggle();
-  }, []);
+    setIsLoaded(true);
+
+    const attemptPlay = () => {
+      if (autoPlay) {
+        playSound("/music.mp3", { loop: true, volume: 0.5 });
+        setHasStarted(true);
+      }
+    };
+
+    // Try immediately
+    attemptPlay();
+
+    // Add listener for first interaction to ensure playback if autoplay was blocked
+    const handleInteraction = () => {
+      attemptPlay();
+      window.removeEventListener("click", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+    };
+
+    window.addEventListener("click", handleInteraction);
+    window.addEventListener("keydown", handleInteraction);
+    window.addEventListener("touchstart", handleInteraction);
+
+    return () => {
+      window.removeEventListener("click", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+    };
+  }, [autoPlay, playSound]);
 
   const handleToggle = () => {
     if (!hasStarted) {
       // First click - start the music
-      playSound('/music.mp3', { loop: true, volume: 0.5 });
+      playSound("/music.mp3", { loop: true, volume: 0.5 });
       setHasStarted(true);
+      if (isMuted) toggleMute();
+    } else {
+      toggleMute();
     }
-    toggleMute();
   };
 
   return (
@@ -38,22 +67,22 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
           onClick={handleToggle}
           className="fixed z-[9999] w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-green-500 shadow-lg hover:shadow-xl flex items-center justify-center text-white transition-all duration-300"
           style={{
-            boxShadow: isMuted 
-              ? '0 4px 20px rgba(239, 68, 68, 0.4)' 
-              : '0 4px 20px rgba(59, 130, 246, 0.4)',
-              zIndex: 9999,
-              right: '10px',
-              bottom: '10px',
-              cursor: 'pointer',    
+            boxShadow: isMuted
+              ? "0 4px 20px rgba(239, 68, 68, 0.4)"
+              : "0 4px 20px rgba(59, 130, 246, 0.4)",
+            zIndex: 9999,
+            right: "10px",
+            bottom: "10px",
+            cursor: "pointer",
           }}
-          aria-label={isMuted ? 'Unmute music' : 'Mute music'}
+          aria-label={isMuted ? "Unmute music" : "Mute music"}
         >
           <AnimatePresence mode="wait">
             {isMuted ? (
               <motion.div
                 key="muted"
                 initial={{ opacity: 0 }}
-                animate={{  opacity: 1 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
@@ -63,8 +92,8 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
               <motion.div
                 key="unmuted"
                 initial={{ opacity: 0 }}
-                animate={{  opacity: 1 }}
-                exit={{  opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
                 <Volume2 className="w-6 h-6" />
@@ -77,4 +106,3 @@ export function BackgroundMusic({ autoPlay = true }: BackgroundMusicProps) {
   );
 }
 export default BackgroundMusic;
-

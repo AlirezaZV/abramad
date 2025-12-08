@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./ui/input-otp";
 import type { UserFormPayload } from "../../types/user";
+import { toast } from "sonner";
 
 interface UserFormProps {
   onSubmit: (data: UserFormPayload) => void;
@@ -28,9 +29,10 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState("");
-  const [formMessage, setFormMessage] = useState<
-    { type: "error" | "success"; text: string }
-  | null>(null);
+  const [formMessage, setFormMessage] = useState<{
+    type: "error" | "success";
+    text: string;
+  } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRequestingOtp, setIsRequestingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
@@ -126,6 +128,7 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
 
       return true;
     } catch (error) {
+      toast.error("ارسال کد تایید با خطا روبه‌رو شد");
       setOtpError(
         error instanceof Error
           ? error.message
@@ -369,7 +372,7 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
                   placeholder="user@systemgroup.net"
                   dir="ltr"
                 />
-                                {errors.email && (
+                {errors.email && (
                   <p className="text-red-400 text-sm text-right">
                     {errors.email}
                   </p>
@@ -402,17 +405,17 @@ export function UserForm({ onSubmit, onClose }: UserFormProps) {
               را وارد کنید:
             </p>
 
-            {otpStatusMessage && (
+            {/* {otpStatusMessage && (
               <p className="text-blue-300 text-sm text-center mb-4">
                 {otpStatusMessage}
               </p>
-            )}
+            )} */}
 
-            {otpPreview && (
+            {/* {otpPreview && (
               <p className="text-emerald-300 text-sm text-center mb-4">
                 کد تست: <span className="font-mono text-lg">{otpPreview}</span>
               </p>
-            )}
+            )} */}
 
             <div className="flex justify-center mb-6">
               <InputOTP
