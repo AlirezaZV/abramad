@@ -16,10 +16,15 @@ type MagfaConfig = {
 };
 
 const resolveConfig = (): MagfaConfig => {
-  const username = process.env.MAGFA_USERNAME ?? "Marketing";
-  const password = process.env.MAGFA_PASSWORD ?? "OjYRosDYHLyXNPSZ";
+  // const username = process.env.MAGFA_USERNAME ?? "Marketing";
+  // const password = process.env.MAGFA_PASSWORD ?? "OjYRosDYHLyXNPSZ";
+  // const domain = process.env.MAGFA_DOMAIN ?? "abramad";
+  // const sender = process.env.MAGFA_SENDER ?? "30007601";
+
+  const username = process.env.MAGFA_USERNAME ?? "abramad_41307";
+  const password = process.env.MAGFA_PASSWORD ?? "ByLKAUIpMNBEP5OH";
   const domain = process.env.MAGFA_DOMAIN ?? "abramad";
-  const sender = process.env.MAGFA_SENDER ?? "30007601";
+  const sender = process.env.MAGFA_SENDER ?? "300041307";
 
   if (!username || !password || !domain) {
     throw new Error("Magfa SMS credentials are missing");
